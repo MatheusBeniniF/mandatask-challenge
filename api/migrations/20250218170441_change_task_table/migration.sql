@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Task" ALTER COLUMN "name" DROP NOT NULL,
+ALTER COLUMN "scheduled_for" DROP NOT NULL;

@@ -1,0 +1,44 @@
+services:
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    ports:
+      - "3003:3001"
+    env_file:
+      - ./api/.env
+    depends_on:
+      - db
+    volumes:
+      - ./api:/app
+      - /app/node_modules
+    command: sh -c "npm ci; npx prisma generate; npx prisma migrate dev; npm run start:dev"
+  webapp:
+    build:
+      context: ./webapp
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./webapp:/app
+    env_file:
+      - ./webapp/.env
+    depends_on:
+      - api
+    command: sh -c "npm ci; npm run dev"
+
+  db:
+    container_name: tasks_db
+    image: postgres:15
+    environment:
+      POSTGRES_USER: johndoe
+      POSTGRES_PASSWORD: randompassword
+      POSTGRES_DB: tasks
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+
+volumes:
+  pg_data:
